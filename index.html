@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ký Gửi Luxe | Thư Viện Sản Phẩm Cao Cấp</title>
+  <meta name="description" content="Trang web xem sản phẩm ký gửi trực tiếp từ Google Sheet. Tìm kiếm, lọc và xem thông tin sản phẩm chi tiết dễ dàng.">
+  
+  <!-- CSS Stylesheet -->
+  <link rel="stylesheet" href="style.css">
+  
+  <!-- Lucide Icons Library -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+
+  <div class="app-container">
+    <!-- Header -->
+    <header>
+      <div class="logo-section">
+        <h1>LADY LUXE</h1>
+        <p>
+          <span id="status-indicator" class="status-indicator"></span>
+          <span id="status-text">Ký gửi đồ nữ hàng hiệu</span>
+        </p>
+      </div>
+      <div class="header-actions">
+        <button class="btn-icon" id="settings-btn" onclick="openSettingsModal()" title="Cấu hình Google Sheet">
+          <i data-lucide="settings"></i>
+        </button>
+      </div>
+    </header>
+
+    <!-- Search and Filters Section -->
+    <section class="filter-dashboard">
+      <div class="search-row">
+        <div class="search-input-wrapper">
+          <i data-lucide="search"></i>
+          <input type="text" id="search-input" class="search-input" placeholder="Tìm sản phẩm, thương hiệu hoặc mô tả...">
+        </div>
+        <select id="sort-select" class="sort-select">
+          <option value="featured">Nổi bật</option>
+          <option value="price-asc">Giá: Thấp đến Cao</option>
+          <option value="price-desc">Giá: Cao đến Thấp</option>
+        </select>
+      </div>
+      
+      <!-- Category Chips Container (Scrollable) -->
+      <div class="categories-container" id="categories-container">
+        <!-- Rendered dynamically -->
+        <button class="category-chip active">Tất cả</button>
+      </div>
+
+      <!-- Stats -->
+      <div class="stats-bar">
+        <span id="stats-showing">Đang tải sản phẩm...</span>
+      </div>
+    </section>
+
+    <!-- Product Grid -->
+    <main class="products-grid" id="products-grid">
+      <!-- Loading skeletons will be rendered here by default -->
+    </main>
+  </div>
+
+  <!-- Product Detail Drawer -->
+  <div class="drawer-backdrop" id="drawer-backdrop"></div>
+  <div class="drawer" id="drawer">
+    <div class="drawer-header">
+      <h3 class="drawer-title">Chi tiết sản phẩm</h3>
+      <button class="btn-icon" id="drawer-close-btn">
+        <i data-lucide="x"></i>
+      </button>
+    </div>
+    
+    <div class="drawer-body">
+      <div class="drawer-img-wrapper">
+        <img src="" alt="" class="drawer-img" id="drawer-img">
+      </div>
+      
+      <div class="drawer-meta">
+        <div class="drawer-tags">
+          <span class="drawer-cat" id="drawer-cat">Danh mục</span>
+          <span class="status-badge" id="drawer-status">Còn hàng</span>
+        </div>
+        <h2 class="drawer-product-title" id="drawer-product-title">Tên sản phẩm</h2>
+      </div>
+      
+      <div class="drawer-price-row">
+        <span class="drawer-price-lbl">Giá ký gửi</span>
+        <span class="drawer-price-val" id="drawer-price-val">0 ₫</span>
+      </div>
+      
+      <div class="drawer-description">
+        <h4 class="drawer-section-title">Mô tả chi tiết</h4>
+        <p class="drawer-desc-text" id="drawer-desc-text">Mô tả sản phẩm...</p>
+      </div>
+      
+      <div class="drawer-share-section" style="border-top: 1px solid var(--border-color); padding-top: 1.25rem;">
+        <h4 class="drawer-section-title" style="margin-bottom: 0.75rem;">Gửi cho khách xem kèm giá</h4>
+        <div class="drawer-share-grid">
+          <button class="btn-share btn-zalo" id="btn-share-zalo">
+            <i data-lucide="message-circle" style="width: 16px; height: 16px;"></i> Zalo
+          </button>
+          <button class="btn-share btn-facebook" id="btn-share-facebook">
+            <i data-lucide="facebook" style="width: 16px; height: 16px;"></i> Facebook
+          </button>
+          <button class="btn-share btn-copy" id="btn-share-copy">
+            <i data-lucide="copy" style="width: 16px; height: 16px;"></i> Copy tin nhắn
+          </button>
+        </div>
+      </div>
+    </div>
+    
+    <div class="drawer-footer">
+      <button class="btn-primary" id="btn-buy">
+        <i data-lucide="shopping-bag"></i> Mua ngay sản phẩm
+      </button>
+      <button class="btn-secondary" id="btn-chat">
+        <i data-lucide="message-circle"></i> Chat với người bán
+      </button>
+    </div>
+  </div>
+
+  <!-- Google Sheet Configuration Modal -->
+  <div class="modal-backdrop" id="modal-backdrop">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 class="modal-title">
+          <i data-lucide="settings" style="color: var(--primary);"></i>
+          Cấu hình nguồn dữ liệu
+        </h3>
+        <button class="btn-icon" onclick="closeSettingsModal()">
+          <i data-lucide="x"></i>
+        </button>
+      </div>
+      
+      <div class="modal-body">
+        <div class="form-group">
+          <label class="form-label" for="sheet-id-input">Google Sheet Link / ID</label>
+          <input type="text" id="sheet-id-input" class="form-input" placeholder="Dán link Google Sheet hoặc ID vào đây...">
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label" for="contact-input">SĐT hoặc Link liên hệ mặc định (Zalo/FB)</label>
+          <input type="text" id="contact-input" class="form-input" placeholder="Ví dụ: 0912345678 hoặc link Zalo/Messenger">
+        </div>
+        
+        <div class="guide-box">
+          <strong>Cách thiết lập Google Sheet:</strong>
+          <ol>
+            <li>Tạo file Google Sheet có các cột: <strong>ID, Tên sản phẩm, Danh mục, Giá, Ảnh, Mô tả, Trạng thái, Link liên hệ</strong>.</li>
+            <li>Nhấn <strong>Chia sẻ (Share)</strong> -> Chuyển sang chế độ <strong>Bất kỳ ai có liên kết đều có thể xem</strong>.</li>
+            <li>Copy liên kết hoặc ID dán vào ô bên trên và bấm Lưu.</li>
+          </ol>
+        </div>
+      </div>
+      
+      <div class="modal-footer">
+        <button class="btn-secondary" style="margin-right: auto;" onclick="resetToMockData()">Khôi phục mặc định</button>
+        <button class="btn-secondary" onclick="closeSettingsModal()">Hủy</button>
+        <button class="btn-primary" onclick="saveSettings()">Lưu cấu hình</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Application Logic -->
+  <script src="app.js"></script>
+</body>
+</html>
