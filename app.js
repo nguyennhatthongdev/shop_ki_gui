@@ -157,7 +157,8 @@ const resolveImageUrl = (url) => {
   if (urlClean.includes('drive.google.com') || urlClean.includes('docs.google.com')) {
     const match = urlClean.match(/id=([a-zA-Z0-9-_]+)/) || urlClean.match(/\/d\/([a-zA-Z0-9-_]+)/);
     if (match && match[1]) {
-      return `https://drive.google.com/thumbnail?id=${match[1]}&sz=w1000`;
+      const targetUrl = `https://drive.google.com/thumbnail?id=${match[1]}&sz=w1000`;
+      return `https://images1-focus-opensocial.googleusercontent.com/gadgets/proxy?container=focus&refresh=2592000&url=${encodeURIComponent(targetUrl)}`;
     }
   }
   
