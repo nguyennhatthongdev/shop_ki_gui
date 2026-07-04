@@ -583,7 +583,10 @@ const openProductDrawer = (product) => {
   }
   
   // Set up Social Share Buttons
-  const shareUrl = window.location.origin + window.location.pathname + '#' + product.id;
+  let shareUrl = window.location.origin + window.location.pathname + '#' + product.id;
+  if (state.sheetId && state.sheetId.includes('script.google.com')) {
+    shareUrl = state.sheetId + (state.sheetId.includes('?') ? '&' : '?') + 'p=' + product.id;
+  }
   
   // Zalo Share
   document.getElementById('btn-share-zalo').onclick = () => {
