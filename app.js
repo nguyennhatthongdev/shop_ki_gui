@@ -1,3 +1,18 @@
+// Migration: If user has an old Apps Script ID in localStorage, clear it so it uses the new one
+(function() {
+  const currentSavedSheet = localStorage.getItem('sheet_id');
+  if (currentSavedSheet) {
+    const oldIds = [
+      'AKfycbzYF99LpDjLRJMXWgI1nHDLwhqTIGqwvQUem-jW7gbW8SDHqM7jJNMTTNLCPmIF1TKP',
+      'AKfycbx3iXF99HYyZz1xJFZ4WGsSJLWCRwLzPJfSiD5IF8wYqDtIz1BqDF3vVphDqjlLazye',
+      'AKfycbyLdsCQm7Cv_wj6DGh32DXYF6Mw7_Eyh8dsarILLKOBY_EwrCgB_Ojh7jRfd2rLGkRT'
+    ];
+    if (oldIds.some(id => currentSavedSheet.includes(id))) {
+      localStorage.removeItem('sheet_id');
+    }
+  }
+})();
+
 // Application State
 const state = {
   products: [],
