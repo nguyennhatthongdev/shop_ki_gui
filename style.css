@@ -5,28 +5,28 @@
   /* Design Tokens */
   --font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   
-  --bg-app: #090d16;
-  --bg-surface: #111827;
-  --bg-surface-hover: #1f2937;
-  --bg-card: rgba(17, 24, 39, 0.7);
-  --border-color: rgba(255, 255, 255, 0.06);
-  --border-hover: rgba(16, 185, 129, 0.3);
+  --bg-app: #FFF5F7;
+  --bg-surface: #FFFFFF;
+  --bg-surface-hover: #FFF0F3;
+  --bg-card: rgba(255, 255, 255, 0.9);
+  --border-color: rgba(255, 94, 137, 0.12);
+  --border-hover: rgba(255, 94, 137, 0.4);
   
-  --primary: #10b981;
-  --primary-glow: rgba(16, 185, 129, 0.15);
-  --primary-hover: #059669;
-  --accent: #f59e0b;
-  --accent-glow: rgba(245, 158, 11, 0.15);
+  --primary: #FF5E89;
+  --primary-glow: rgba(255, 94, 137, 0.12);
+  --primary-hover: #E04771;
+  --accent: #D43F6A;
+  --accent-glow: rgba(212, 63, 106, 0.1);
   
-  --text-main: #f3f4f6;
-  --text-muted: #9ca3af;
-  --text-inverse: #090d16;
+  --text-main: #2D2527;
+  --text-muted: #8C7E82;
+  --text-inverse: #FFFFFF;
   
   --success: #10b981;
   --danger: #ef4444;
-  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.15);
-  --shadow-lg: 0 10px 30px rgba(0, 0, 0, 0.4);
-  --shadow-glow: 0 0 20px rgba(16, 185, 129, 0.2);
+  --shadow-sm: 0 2px 12px rgba(255, 94, 137, 0.05);
+  --shadow-lg: 0 10px 30px rgba(255, 94, 137, 0.08);
+  --shadow-glow: 0 0 20px rgba(255, 94, 137, 0.2);
   
   --radius-sm: 8px;
   --radius-md: 16px;
@@ -55,8 +55,8 @@ body {
   line-height: 1.5;
   overflow-x: hidden;
   background-image: 
-    radial-gradient(circle at 10% 20%, rgba(16, 185, 129, 0.05) 0%, transparent 40%),
-    radial-gradient(circle at 90% 80%, rgba(245, 158, 11, 0.03) 0%, transparent 40%);
+    radial-gradient(circle at 10% 20%, rgba(255, 94, 137, 0.04) 0%, transparent 40%),
+    radial-gradient(circle at 90% 80%, rgba(255, 192, 203, 0.02) 0%, transparent 40%);
   background-attachment: fixed;
 }
 
@@ -66,7 +66,7 @@ body {
   height: 8px;
 }
 ::-webkit-scrollbar-track {
-  background: var(--bg-app);
+  background: var(--bg-surface);
 }
 ::-webkit-scrollbar-thumb {
   background: var(--border-color);
@@ -96,7 +96,7 @@ header {
 .logo-section h1 {
   font-size: 1.75rem;
   font-weight: 800;
-  background: linear-gradient(135deg, #ffffff 0%, var(--primary) 100%);
+  background: linear-gradient(135deg, var(--text-main) 0%, var(--primary) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   letter-spacing: -0.5px;
@@ -134,7 +134,7 @@ header {
 }
 
 .btn-icon {
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(255, 94, 137, 0.05);
   border: 1px solid var(--border-color);
   color: var(--text-main);
   padding: 0.75rem;
@@ -189,7 +189,7 @@ header {
 
 .search-input {
   width: 100%;
-  background: rgba(255, 255, 255, 0.04);
+  background: #FFF9FA;
   border: 1px solid var(--border-color);
   color: var(--text-main);
   padding: 0.85rem 1rem 0.85rem 2.75rem;
@@ -202,12 +202,12 @@ header {
 .search-input:focus {
   outline: none;
   border-color: var(--primary);
-  background: rgba(255, 255, 255, 0.07);
+  background: var(--bg-surface);
   box-shadow: 0 0 0 3px var(--primary-glow);
 }
 
 .sort-select {
-  background: rgba(255, 255, 255, 0.04);
+  background: #FFF9FA;
   border: 1px solid var(--border-color);
   color: var(--text-main);
   padding: 0 1rem;
@@ -222,6 +222,7 @@ header {
 
 .sort-select:focus {
   border-color: var(--primary);
+  background: var(--bg-surface);
 }
 
 /* Category Filters (Horizontal Scrollable) */
@@ -238,7 +239,7 @@ header {
 }
 
 .category-chip {
-  background: rgba(255, 255, 255, 0.04);
+  background: rgba(255, 94, 137, 0.05);
   border: 1px solid var(--border-color);
   color: var(--text-muted);
   padding: 0.5rem 1.25rem;
@@ -251,16 +252,16 @@ header {
 }
 
 .category-chip:hover {
-  background: rgba(255, 255, 255, 0.08);
+  background: rgba(255, 94, 137, 0.1);
   color: var(--text-main);
-  border-color: rgba(255, 255, 255, 0.2);
+  border-color: var(--border-hover);
 }
 
 .category-chip.active {
   background: var(--primary);
   color: var(--text-inverse);
   border-color: var(--primary);
-  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+  box-shadow: 0 4px 12px rgba(255, 94, 137, 0.3);
 }
 
 /* Statistics Bar */
@@ -295,7 +296,7 @@ header {
 .product-card:hover {
   transform: translateY(-6px);
   border-color: var(--border-hover);
-  box-shadow: var(--shadow-lg), 0 0 15px rgba(16, 185, 129, 0.05);
+  box-shadow: var(--shadow-lg), 0 0 15px rgba(255, 94, 137, 0.05);
 }
 
 .card-image-wrapper {
@@ -379,7 +380,7 @@ header {
   justify-content: space-between;
   align-items: center;
   padding-top: 0.75rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.04);
+  border-top: 1px solid rgba(255, 94, 137, 0.06);
 }
 
 .card-price {
@@ -394,7 +395,7 @@ header {
 }
 
 .skeleton-image {
-  background: linear-gradient(90deg, rgba(255, 255, 255, 0.03) 25%, rgba(255, 255, 255, 0.08) 50%, rgba(255, 255, 255, 0.03) 75%);
+  background: linear-gradient(90deg, rgba(0, 0, 0, 0.02) 25%, rgba(0, 0, 0, 0.06) 50%, rgba(0, 0, 0, 0.02) 75%);
   background-size: 200% 100%;
   animation: skeleton-loading 1.5s infinite;
 }
@@ -403,7 +404,7 @@ header {
   height: 1rem;
   margin-bottom: 0.5rem;
   border-radius: 4px;
-  background: linear-gradient(90deg, rgba(255, 255, 255, 0.03) 25%, rgba(255, 255, 255, 0.08) 50%, rgba(255, 255, 255, 0.03) 75%);
+  background: linear-gradient(90deg, rgba(0, 0, 0, 0.02) 25%, rgba(0, 0, 0, 0.06) 50%, rgba(0, 0, 0, 0.02) 75%);
   background-size: 200% 100%;
   animation: skeleton-loading 1.5s infinite;
 }
@@ -507,9 +508,9 @@ header {
 }
 
 .drawer-cat {
-  background: rgba(16, 185, 129, 0.1);
+  background: rgba(255, 94, 137, 0.08);
   color: var(--primary);
-  border: 1px solid rgba(16, 185, 129, 0.2);
+  border: 1px solid rgba(255, 94, 137, 0.15);
   padding: 0.35rem 0.75rem;
   border-radius: var(--radius-sm);
   font-size: 0.75rem;
@@ -570,7 +571,7 @@ header {
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
-  background: rgba(17, 24, 39, 0.5);
+  background: #FFF9FA;
 }
 
 .btn-primary {
@@ -711,12 +712,12 @@ header {
 }
 
 .guide-box {
-  background: rgba(16, 185, 129, 0.05);
-  border: 1px solid rgba(16, 185, 129, 0.15);
+  background: rgba(255, 94, 137, 0.04);
+  border: 1px solid rgba(255, 94, 137, 0.15);
   border-radius: var(--radius-md);
   padding: 1rem;
   font-size: 0.85rem;
-  color: #a7f3d0;
+  color: #B23D5A;
 }
 
 .guide-box ol {
