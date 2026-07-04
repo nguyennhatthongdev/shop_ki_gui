@@ -821,7 +821,7 @@ header {
 /* Share Buttons Grid inside Drawer */
 .drawer-share-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(2, 1fr);
   gap: 0.5rem;
   margin-top: 0.5rem;
 }
@@ -875,6 +875,16 @@ header {
   border-color: var(--accent);
   color: var(--text-inverse);
   box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+}
+
+.btn-link {
+  border-color: rgba(16, 185, 129, 0.2);
+}
+.btn-link:hover {
+  background: #10B981;
+  border-color: #10B981;
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
 }
 
 /* Single Product Landing Page Mode Overrides */

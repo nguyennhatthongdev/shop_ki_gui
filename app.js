@@ -594,6 +594,15 @@ const openProductDrawer = (product) => {
     });
   };
   
+  // Copy URL Only Share
+  document.getElementById('btn-share-link').onclick = () => {
+    navigator.clipboard.writeText(shareUrl).then(() => {
+      alert('Đã sao chép đường dẫn trực tiếp của sản phẩm!');
+    }).catch(err => {
+      console.error('Không thể sao chép liên kết:', err);
+    });
+  };
+  
   // Update close button style based on single product mode
   const closeBtn = document.getElementById('drawer-close-btn');
   if (document.body.classList.contains('single-product-mode')) {
