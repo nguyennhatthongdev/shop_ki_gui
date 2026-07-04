@@ -110,9 +110,30 @@ const extractSpreadsheetId = (input) => {
   return match ? match[1] : input.trim();
 };
 
+// Helper function to remove accents/diacritics in Vietnamese
+const removeDiacritics = (str) => {
+  if (!str) return '';
+  return String(str)
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .replace(/đ/g, "d")
+    .trim();
+};
+
+// Helper function to find cell value based on flexible keyword matching
+const findValueHelper = (item, keys, keywords) => {
+  const cleanKeywords = keywords.map(kw => removeDiacritics(kw));
+  const matchedKey = keys.find(k => {
+    const cleanKey = removeDiacritics(k);
+    return cleanKeywords.some(kw => cleanKey.includes(kw));
+  });
+  return matchedKey ? item[matchedKey] : null;
+};
+
 // Map raw data from Google Sheet Visualization API
 const mapGoogleSheetToProducts = (rawCols, rawRows) => {
-  const colNames = rawCols.map(col => (col.label || '').toLowerCase().trim());
+  const colNames = rawCols.map(col => col.label || '');
   
   return rawRows.map((row, index) => {
     const item = {};
@@ -125,19 +146,17 @@ const mapGoogleSheetToProducts = (rawCols, rawRows) => {
       item[colName] = cell ? cell.v : '';
     });
     
-    const findValue = (keywords) => {
-      const key = colNames.find(col => keywords.some(kw => col.includes(kw)));
-      return key && item[key] !== undefined && item[key] !== null ? item[key] : null;
-    };
+    const findValue = (keywords) => findValueHelper(item, colNames, keywords);
     
-    const id = findValue(['id', 'mã']) || `sp-${index + 1}`;
-    const name = findValue(['tên', 'name', 'title', 'sản phẩm']) || 'Sản phẩm không tên';
-    const category = findValue(['danh mục', 'loại', 'category', 'nhóm']) || 'Mặc định';
-    const priceRaw = findValue(['giá', 'price']);
-    const image = findValue(['ảnh', 'image', 'hình', 'img', 'url']) || 'https://images.unsplash.com/photo-1531403009284-440f080d1e12?w=500&auto=format&fit=crop&q=80';
-    const description = findValue(['mô tả', 'description', 'detail', 'chi tiết']) || 'Chưa có thông tin mô tả chi tiết cho sản phẩm này.';
-    const statusRaw = findValue(['trạng thái', 'status', 'còn', 'tồn']) || 'Còn hàng';
-    const contact = findValue(['liên hệ', 'contact', 'zalo', 'link', 'mua']) || '';
+    // Direct matches with user's specific columns (handling diacritics-insensitive fallback)
+    const id = item.SanPhamID || item.SanPhamId || findValue(['sanphamid', 'id', 'masanpham', 'mã']) || `sp-${index + 1}`;
+    const name = item.TenSanPham || findValue(['tensanpham', 'tên', 'name', 'title', 'sản phẩm']) || 'Sản phẩm không tên';
+    const category = item.LoaiSanPham || findValue(['loaisanpham', 'danh mục', 'loại', 'category', 'nhóm']) || 'Mặc định';
+    const priceRaw = item.GiaKhachDeXuat || findValue(['giakhachdexuat', 'giá', 'price']);
+    const image = item.Hinh1 || item.Hinh2 || item.Hinh3 || findValue(['hinh1', 'hinh', 'ảnh', 'image', 'url']) || 'https://images.unsplash.com/photo-1531403009284-440f080d1e12?w=500&auto=format&fit=crop&q=80';
+    const description = item.MoTa || findValue(['mota', 'mô tả', 'description', 'chi tiết']) || 'Chưa có thông tin mô tả chi tiết cho sản phẩm này.';
+    const statusRaw = item.TrangThaiTong || findValue(['trangthaitong', 'trạng thái', 'status', 'còn', 'tồn']) || 'Còn hàng';
+    const contact = item.LinkLienHe || findValue(['linklienhe', 'liên hệ', 'contact', 'zalo']) || '';
     
     // Format Price
     let priceVal = 0;
@@ -279,25 +298,18 @@ const renderProducts = () => {
 // Map raw data from Google Apps Script Web App (Option 2)
 const normalizeAppsScriptProducts = (dataArray) => {
   return dataArray.map((item, index) => {
-    const keys = Object.keys(item).map(k => k.toLowerCase().trim());
-    const normalizedItem = {};
-    Object.keys(item).forEach(k => {
-      normalizedItem[k.toLowerCase().trim()] = item[k];
-    });
+    const keys = Object.keys(item);
+    const findValue = (keywords) => findValueHelper(item, keys, keywords);
     
-    const findValue = (keywords) => {
-      const key = keys.find(k => keywords.some(kw => k.includes(kw)));
-      return key && normalizedItem[key] !== undefined && normalizedItem[key] !== null ? normalizedItem[key] : null;
-    };
-    
-    const id = findValue(['id', 'mã']) || `sp-${index + 1}`;
-    const name = findValue(['tên', 'name', 'title', 'sản phẩm']) || 'Sản phẩm không tên';
-    const category = findValue(['danh mục', 'loại', 'category', 'nhóm']) || 'Mặc định';
-    const priceRaw = findValue(['giá', 'price']);
-    const image = findValue(['ảnh', 'image', 'hình', 'img', 'url']) || 'https://images.unsplash.com/photo-1531403009284-440f080d1e12?w=500&auto=format&fit=crop&q=80';
-    const description = findValue(['mô tả', 'description', 'detail', 'chi tiết']) || 'Chưa có thông tin mô tả chi tiết cho sản phẩm này.';
-    const statusRaw = findValue(['trạng thái', 'status', 'còn', 'tồn']) || 'Còn hàng';
-    const contact = findValue(['liên hệ', 'contact', 'zalo', 'link', 'mua']) || '';
+    // Direct matches with user's specific columns (handling diacritics-insensitive fallback)
+    const id = item.SanPhamID || item.SanPhamId || findValue(['sanphamid', 'id', 'masanpham', 'mã']) || `sp-${index + 1}`;
+    const name = item.TenSanPham || findValue(['tensanpham', 'tên', 'name', 'title', 'sản phẩm']) || 'Sản phẩm không tên';
+    const category = item.LoaiSanPham || findValue(['loaisanpham', 'danh mục', 'loại', 'category', 'nhóm']) || 'Mặc định';
+    const priceRaw = item.GiaKhachDeXuat || findValue(['giakhachdexuat', 'giá', 'price']);
+    const image = item.Hinh1 || item.Hinh2 || item.Hinh3 || findValue(['hinh1', 'hinh', 'ảnh', 'image', 'url']) || 'https://images.unsplash.com/photo-1531403009284-440f080d1e12?w=500&auto=format&fit=crop&q=80';
+    const description = item.MoTa || findValue(['mota', 'mô tả', 'description', 'chi tiết']) || 'Chưa có thông tin mô tả chi tiết cho sản phẩm này.';
+    const statusRaw = item.TrangThaiTong || findValue(['trangthaitong', 'trạng thái', 'status', 'còn', 'tồn']) || 'Còn hàng';
+    const contact = item.LinkLienHe || findValue(['linklienhe', 'liên hệ', 'contact', 'zalo']) || '';
     
     // Format Price
     let priceVal = 0;
