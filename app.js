@@ -490,6 +490,9 @@ const openProductDrawer = (product) => {
   const backdrop = document.getElementById('drawer-backdrop');
   const drawer = document.getElementById('drawer');
   
+  // Enable single product page mode (hides list behind, centers card)
+  document.body.classList.add('single-product-mode');
+  
   // Set window hash for deep linking (avoiding infinite loops)
   if (window.location.hash !== '#' + product.id) {
     history.replaceState(null, null, '#' + product.id);
@@ -664,10 +667,6 @@ const checkHashAndOpenProduct = () => {
     const productId = hash.substring(1);
     const product = state.products.find(p => p.id === productId);
     if (product) {
-      const drawer = document.getElementById('drawer');
-      if (!drawer.classList.contains('active')) {
-        document.body.classList.add('single-product-mode');
-      }
       openProductDrawer(product);
     }
   } else {
