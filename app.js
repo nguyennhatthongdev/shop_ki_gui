@@ -6,7 +6,7 @@ const state = {
   activeCategory: 'Tất cả',
   searchQuery: '',
   sortBy: 'featured',
-  sheetId: localStorage.getItem('sheet_id') || '',
+  sheetId: localStorage.getItem('sheet_id') || 'https://script.google.com/macros/s/AKfycbzYF99LpDjLRJMXWgI1nHDLwhqTIGqwvQUem-jW7gbW8SDHqM7jJNMTTNLCPmIF1TKP/exec',
   defaultContact: localStorage.getItem('default_contact') || '',
   loading: false,
 };
@@ -276,6 +276,60 @@ const renderProducts = () => {
   if (window.lucide) window.lucide.createIcons();
 };
 
+// Map raw data from Google Apps Script Web App (Option 2)
+const normalizeAppsScriptProducts = (dataArray) => {
+  return dataArray.map((item, index) => {
+    const keys = Object.keys(item).map(k => k.toLowerCase().trim());
+    const normalizedItem = {};
+    Object.keys(item).forEach(k => {
+      normalizedItem[k.toLowerCase().trim()] = item[k];
+    });
+    
+    const findValue = (keywords) => {
+      const key = keys.find(k => keywords.some(kw => k.includes(kw)));
+      return key && normalizedItem[key] !== undefined && normalizedItem[key] !== null ? normalizedItem[key] : null;
+    };
+    
+    const id = findValue(['id', 'mã']) || `sp-${index + 1}`;
+    const name = findValue(['tên', 'name', 'title', 'sản phẩm']) || 'Sản phẩm không tên';
+    const category = findValue(['danh mục', 'loại', 'category', 'nhóm']) || 'Mặc định';
+    const priceRaw = findValue(['giá', 'price']);
+    const image = findValue(['ảnh', 'image', 'hình', 'img', 'url']) || 'https://images.unsplash.com/photo-1531403009284-440f080d1e12?w=500&auto=format&fit=crop&q=80';
+    const description = findValue(['mô tả', 'description', 'detail', 'chi tiết']) || 'Chưa có thông tin mô tả chi tiết cho sản phẩm này.';
+    const statusRaw = findValue(['trạng thái', 'status', 'còn', 'tồn']) || 'Còn hàng';
+    const contact = findValue(['liên hệ', 'contact', 'zalo', 'link', 'mua']) || '';
+    
+    // Format Price
+    let priceVal = 0;
+    if (priceRaw !== null && priceRaw !== undefined) {
+      if (typeof priceRaw === 'number') {
+        priceVal = priceRaw;
+      } else {
+        const cleanStr = String(priceRaw).replace(/[^0-9]/g, '');
+        priceVal = parseInt(cleanStr, 10) || 0;
+      }
+    }
+    
+    // Format Status
+    let inStock = true;
+    const statusStr = String(statusRaw).toLowerCase();
+    if (statusStr.includes('hết') || statusStr.includes('out') || statusStr === '0' || statusStr === 'false') {
+      inStock = false;
+    }
+    
+    return {
+      id,
+      name,
+      category,
+      price: priceVal,
+      image,
+      description,
+      inStock,
+      contact: String(contact)
+    };
+  });
+};
+
 // Data Fetch & Parse Logic
 const loadData = async () => {
   state.loading = true;
@@ -294,40 +348,57 @@ const loadData = async () => {
   }
   
   try {
-    const cleanSheetId = extractSpreadsheetId(state.sheetId);
-    const url = `https://docs.google.com/spreadsheets/d/${cleanSheetId}/gviz/tq?tqx=out:json`;
+    let parsedProducts = [];
+    const isAppsScript = state.sheetId.includes('script.google.com');
     
-    const response = await fetch(url);
-    if (!response.ok) throw new Error('Không thể tải file từ Google Sheets');
-    
-    const text = await response.text();
-    // Google gviz endpoint returns code wrapper /*google.visualization.Query.setResponse({...});*/
-    const jsonStart = text.indexOf('{');
-    const jsonEnd = text.lastIndexOf('}');
-    if (jsonStart === -1 || jsonEnd === -1) throw new Error('Dữ liệu Google Sheets không đúng định dạng');
-    
-    const jsonString = text.substring(jsonStart, jsonEnd + 1);
-    const data = JSON.parse(jsonString);
-    
-    if (data.status === 'error') {
-      throw new Error(data.errors[0]?.detailed_message || 'Lỗi truy cập dữ liệu Google Sheet');
+    if (isAppsScript) {
+      // Fetch directly from Google Apps Script Web App URL
+      const response = await fetch(state.sheetId);
+      if (!response.ok) throw new Error('Không thể kết nối API Google Apps Script');
+      
+      const data = await response.json();
+      if (!Array.isArray(data)) {
+        throw new Error('Dữ liệu trả về từ Apps Script phải là một mảng.');
+      }
+      
+      parsedProducts = normalizeAppsScriptProducts(data);
+    } else {
+      // Standard Google Sheets viz API
+      const cleanSheetId = extractSpreadsheetId(state.sheetId);
+      const url = `https://docs.google.com/spreadsheets/d/${cleanSheetId}/gviz/tq?tqx=out:json`;
+      
+      const response = await fetch(url);
+      if (!response.ok) throw new Error('Không thể tải file từ Google Sheets');
+      
+      const text = await response.text();
+      // Google gviz endpoint returns code wrapper /*google.visualization.Query.setResponse({...});*/
+      const jsonStart = text.indexOf('{');
+      const jsonEnd = text.lastIndexOf('}');
+      if (jsonStart === -1 || jsonEnd === -1) throw new Error('Dữ liệu Google Sheets không đúng định dạng');
+      
+      const jsonString = text.substring(jsonStart, jsonEnd + 1);
+      const data = JSON.parse(jsonString);
+      
+      if (data.status === 'error') {
+        throw new Error(data.errors[0]?.detailed_message || 'Lỗi truy cập dữ liệu Google Sheet');
+      }
+      
+      const rawCols = data.table.cols;
+      const rawRows = data.table.rows;
+      
+      parsedProducts = mapGoogleSheetToProducts(rawCols, rawRows);
     }
     
-    const rawCols = data.table.cols;
-    const rawRows = data.table.rows;
-    
-    const parsedProducts = mapGoogleSheetToProducts(rawCols, rawRows);
-    
     if (parsedProducts.length === 0) {
-      throw new Error('Google Sheet không chứa hàng dữ liệu sản phẩm hợp lệ nào.');
+      throw new Error('Không tìm thấy dữ liệu hàng sản phẩm hợp lệ nào.');
     }
     
     state.products = parsedProducts;
     processLoadedData();
     updateUIStatus('connected');
   } catch (error) {
-    console.error('Error loading Google Sheet:', error);
-    alert(`Lỗi kết nối Google Sheet: ${error.message}\n\nỨng dụng sẽ tự động chuyển sang chế độ Dữ liệu mẫu để hiển thị.`);
+    console.error('Error loading data:', error);
+    alert(`Lỗi đồng bộ dữ liệu: ${error.message}\n\nỨng dụng sẽ tự động hiển thị Dữ liệu mẫu.`);
     
     state.products = [...mockProducts];
     processLoadedData();
