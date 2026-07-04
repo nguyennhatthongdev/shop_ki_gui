@@ -6,7 +6,7 @@ const state = {
   activeCategory: 'Tất cả',
   searchQuery: '',
   sortBy: 'featured',
-  sheetId: localStorage.getItem('sheet_id') || 'https://script.google.com/macros/s/AKfycbzYF99LpDjLRJMXWgI1nHDLwhqTIGqwvQUem-jW7gbW8SDHqM7jJNMTTNLCPmIF1TKP/exec',
+  sheetId: localStorage.getItem('sheet_id') || 'https://script.google.com/macros/s/AKfycbx3iXF99HYyZz1xJFZ4WGsSJLWCRwLzPJfSiD5IF8wYqDtIz1BqDF3vVphDqjlLazye/exec',
   defaultContact: localStorage.getItem('default_contact') || '',
   loading: false,
 };
