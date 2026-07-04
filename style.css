@@ -932,3 +932,7 @@ body.single-product-mode .drawer {
     background: var(--bg-surface);
   }
 }
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}

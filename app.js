@@ -226,7 +226,12 @@ const mapGoogleSheetToProducts = (rawCols, rawRows) => {
 // UI Rendering Functions
 const showSkeleton = () => {
   const grid = document.getElementById('products-grid');
-  grid.innerHTML = '';
+  grid.innerHTML = `
+    <div class="loading-banner" style="grid-column: 1 / -1; text-align: center; padding: 3rem 1.5rem; color: var(--text-muted); font-size: 1.05rem; font-weight: 500; font-family: var(--font-family); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1rem;">
+      <div class="loading-spinner-circle" style="width: 2.25rem; height: 2.25rem; border: 3px solid var(--primary-light); border-top-color: var(--primary); border-radius: 50%; animation: spin 0.8s linear infinite;"></div>
+      <span style="color: var(--primary-dark); font-style: italic;">Shop thiếu kinh phí nên website chậm =))</span>
+    </div>
+  `;
   
   for (let i = 0; i < 8; i++) {
     const skeleton = document.createElement('div');
@@ -259,7 +264,7 @@ const updateUIStatus = (statusType) => {
     indicator.classList.add('mock');
     text.textContent = 'Dữ liệu: Chế độ chạy thử (Dữ liệu mẫu)';
   } else {
-    text.textContent = 'Đang kết nối...';
+    text.textContent = 'Shop thiếu kinh phí nên website chậm =))';
   }
 };
 
