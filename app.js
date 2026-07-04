@@ -576,6 +576,27 @@ const openProductDrawer = (product) => {
     });
   };
   
+  // Update close button style based on single product mode
+  const closeBtn = document.getElementById('drawer-close-btn');
+  if (document.body.classList.contains('single-product-mode')) {
+    closeBtn.innerHTML = '<i data-lucide="arrow-left" style="width:1.15rem;height:1.15rem;"></i> Xem shop';
+    closeBtn.className = 'btn-secondary';
+    closeBtn.style.padding = '0.5rem 1rem';
+    closeBtn.style.display = 'flex';
+    closeBtn.style.alignItems = 'center';
+    closeBtn.style.gap = '0.35rem';
+    closeBtn.style.borderRadius = 'var(--radius-md)';
+  } else {
+    closeBtn.innerHTML = '<i data-lucide="x"></i>';
+    closeBtn.className = 'btn-icon';
+    closeBtn.style.padding = '';
+    closeBtn.style.display = '';
+    closeBtn.style.alignItems = '';
+    closeBtn.style.gap = '';
+    closeBtn.style.borderRadius = '';
+  }
+  if (window.lucide) window.lucide.createIcons();
+  
   // Open classes
   backdrop.classList.add('active');
   drawer.classList.add('active');
@@ -585,6 +606,9 @@ const openProductDrawer = (product) => {
 const closeProductDrawer = () => {
   const backdrop = document.getElementById('drawer-backdrop');
   const drawer = document.getElementById('drawer');
+  
+  // Clear single-product-mode
+  document.body.classList.remove('single-product-mode');
   
   // Clear hash when closing drawer
   if (window.location.hash) {
@@ -636,13 +660,18 @@ const resetToMockData = () => {
 // Hash checking for deep linking
 const checkHashAndOpenProduct = () => {
   const hash = window.location.hash;
-  if (hash && hash.startsWith('#sp-')) {
+  if (hash && hash.length > 1) {
     const productId = hash.substring(1);
     const product = state.products.find(p => p.id === productId);
     if (product) {
+      const drawer = document.getElementById('drawer');
+      if (!drawer.classList.contains('active')) {
+        document.body.classList.add('single-product-mode');
+      }
       openProductDrawer(product);
     }
   } else {
+    document.body.classList.remove('single-product-mode');
     closeProductDrawer();
   }
 };

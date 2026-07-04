@@ -877,3 +877,48 @@ header {
   box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
 }
 
+/* Single Product Landing Page Mode Overrides */
+body.single-product-mode header {
+  display: none !important;
+}
+
+body.single-product-mode .filter-dashboard {
+  display: none !important;
+}
+
+body.single-product-mode .products-grid {
+  display: none !important;
+}
+
+body.single-product-mode .drawer-backdrop {
+  background: var(--bg-app);
+  opacity: 1 !important;
+  visibility: visible !important;
+  z-index: 99;
+}
+
+body.single-product-mode .drawer {
+  z-index: 100;
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 100%;
+  max-width: 100%;
+  height: 100%;
+  box-shadow: none;
+}
+
+@media (min-width: 641px) {
+  body.single-product-mode .drawer {
+    position: relative;
+    top: auto;
+    right: auto;
+    margin: 3rem auto;
+    max-width: 520px;
+    height: calc(100vh - 6rem);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--border-color);
+    box-shadow: var(--shadow-lg);
+    background: var(--bg-surface);
+  }
+}
