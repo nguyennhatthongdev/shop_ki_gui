@@ -131,6 +131,24 @@ const findValueHelper = (item, keys, keywords) => {
   return matchedKey ? item[matchedKey] : null;
 };
 
+// Helper function to resolve Google Drive images into direct displayable streams
+const resolveImageUrl = (url) => {
+  if (!url || typeof url !== 'string') {
+    return 'https://images.unsplash.com/photo-1531403009284-440f080d1e12?w=500&auto=format&fit=crop&q=80';
+  }
+  
+  // If it's a Google Drive share link or export link, rewrite to direct usercontent image link
+  const urlClean = url.trim();
+  if (urlClean.includes('drive.google.com') || urlClean.includes('docs.google.com')) {
+    const match = urlClean.match(/id=([a-zA-Z0-9-_]+)/) || urlClean.match(/\/d\/([a-zA-Z0-9-_]+)/);
+    if (match && match[1]) {
+      return `https://lh3.googleusercontent.com/d/${match[1]}`;
+    }
+  }
+  
+  return urlClean;
+};
+
 // Map raw data from Google Sheet Visualization API
 const mapGoogleSheetToProducts = (rawCols, rawRows) => {
   const colNames = rawCols.map(col => col.label || '');
@@ -153,7 +171,8 @@ const mapGoogleSheetToProducts = (rawCols, rawRows) => {
     const name = item.TenSanPham || findValue(['tensanpham', 'tên', 'name', 'title', 'sản phẩm']) || 'Sản phẩm không tên';
     const category = item.LoaiSanPham || findValue(['loaisanpham', 'danh mục', 'loại', 'category', 'nhóm']) || 'Mặc định';
     const priceRaw = item.GiaKhachDeXuat || findValue(['giakhachdexuat', 'giá', 'price']);
-    const image = item.Hinh1 || item.Hinh2 || item.Hinh3 || findValue(['hinh1', 'hinh', 'ảnh', 'image', 'url']) || 'https://images.unsplash.com/photo-1531403009284-440f080d1e12?w=500&auto=format&fit=crop&q=80';
+    const rawImage = item.Hinh1 || item.Hinh2 || item.Hinh3 || findValue(['hinh1', 'hinh', 'ảnh', 'image', 'url']);
+    const image = resolveImageUrl(rawImage);
     const description = item.MoTa || findValue(['mota', 'mô tả', 'description', 'chi tiết']) || 'Chưa có thông tin mô tả chi tiết cho sản phẩm này.';
     const statusRaw = item.TrangThaiTong || findValue(['trangthaitong', 'trạng thái', 'status', 'còn', 'tồn']) || 'Còn hàng';
     const contact = item.LinkLienHe || findValue(['linklienhe', 'liên hệ', 'contact', 'zalo']) || '';
@@ -306,7 +325,8 @@ const normalizeAppsScriptProducts = (dataArray) => {
     const name = item.TenSanPham || findValue(['tensanpham', 'tên', 'name', 'title', 'sản phẩm']) || 'Sản phẩm không tên';
     const category = item.LoaiSanPham || findValue(['loaisanpham', 'danh mục', 'loại', 'category', 'nhóm']) || 'Mặc định';
     const priceRaw = item.GiaKhachDeXuat || findValue(['giakhachdexuat', 'giá', 'price']);
-    const image = item.Hinh1 || item.Hinh2 || item.Hinh3 || findValue(['hinh1', 'hinh', 'ảnh', 'image', 'url']) || 'https://images.unsplash.com/photo-1531403009284-440f080d1e12?w=500&auto=format&fit=crop&q=80';
+    const rawImage = item.Hinh1 || item.Hinh2 || item.Hinh3 || findValue(['hinh1', 'hinh', 'ảnh', 'image', 'url']);
+    const image = resolveImageUrl(rawImage);
     const description = item.MoTa || findValue(['mota', 'mô tả', 'description', 'chi tiết']) || 'Chưa có thông tin mô tả chi tiết cho sản phẩm này.';
     const statusRaw = item.TrangThaiTong || findValue(['trangthaitong', 'trạng thái', 'status', 'còn', 'tồn']) || 'Còn hàng';
     const contact = item.LinkLienHe || findValue(['linklienhe', 'liên hệ', 'contact', 'zalo']) || '';
