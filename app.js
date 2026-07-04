@@ -385,6 +385,11 @@ const normalizeAppsScriptProducts = (dataArray) => {
 // Data Fetch & Parse Logic
 const loadData = async () => {
   state.loading = true;
+  
+  // Show full screen loading overlay
+  const overlay = document.getElementById('loading-overlay');
+  if (overlay) overlay.classList.add('active');
+  
   showSkeleton();
   updateUIStatus('loading');
   
@@ -395,6 +400,7 @@ const loadData = async () => {
       processLoadedData();
       updateUIStatus('mock');
       state.loading = false;
+      if (overlay) overlay.classList.remove('active');
     }, 800); // Small artificial delay for nice skeleton rendering
     return;
   }
@@ -457,6 +463,8 @@ const loadData = async () => {
     updateUIStatus('mock');
   } finally {
     state.loading = false;
+    const overlay = document.getElementById('loading-overlay');
+    if (overlay) overlay.classList.remove('active');
   }
 };
 
